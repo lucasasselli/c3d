@@ -77,7 +77,6 @@ void convert_to_ndc(float camera_fov, float camera_ratio, float clip_near, float
         v_buff[i].coord.y *= 1.0 / (tan(camera_fov / 2) * camera_ratio);
         v_buff[i].coord.z *= 1.0 / (clip_far - clip_near);
         v_buff[i].coord.z += -(2*clip_near) / (clip_far - clip_near);
-        // v_buff[i].coord.w *= 1.0;
     }
 }
 
@@ -153,8 +152,8 @@ void raster()
         w1 = edge_funct(v2, v0, p);
         w2 = edge_funct(v0, v1, p);
 
-        // if (w0 > 0  || w1 > 0 || w2 > 0)
-        //     continue;
+        if (w0 < 0  || w1 < 0 || w2 < 0)
+            continue;
 
         // Calculate min bounding rectangle
         float mbr_min_x = fmin(v0.coord.x, fmin(v1.coord.x, v2.coord.x));
@@ -219,7 +218,7 @@ int main()
     // Open a new window for drawing.
     gfx_open(SCREEN_SIZE_X, SCREEN_SIZE_Y, "graphics_pipeline");
 
-    load_obj_file("objects/horse.obj");
+    load_obj_file("objects/utah.obj");
 
     while (1)
     {
@@ -227,8 +226,8 @@ int main()
 
         for (int i = 0; i < v_buff_cnt; i++)
         {
-            vertex_scale(&v_buff[i], 8);
-            vertex_move(&v_buff[i], 0, 0, -3, r);
+            vertex_scale(&v_buff[i], 1);
+            vertex_move(&v_buff[i], 0, 0, -9, r);
         }
 
         convert_to_ndc(M_PI / 3, 1.0, 1, 20);
