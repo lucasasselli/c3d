@@ -11,28 +11,10 @@
 
 #include "shader.h"
 #include "object.h"
-#include "input.h"
+#include "window.h"
 
 #define SCREEN_WIDTH 1280
 #define SCREEN_HEIGHT 720
-
-GLfloat ratio = GLfloat(SCREEN_HEIGHT)/GLfloat(SCREEN_WIDTH);
-
-static void errorCallback(int error, const char* description)
-{
-    printf("Error: %s\n", description);
-    exit(EXIT_FAILURE);
-}
-
-static void frameBufferSizeCallback(GLFWwindow* window, int width, int height)
-{
-	if (!width || !height)
-		return;
-
-    ratio = GLfloat(height)/GLfloat(width);
-
-	glViewport(0, 0, width, height);
-}
 
 static GLuint VAO, VBO, EBO;
 
@@ -42,7 +24,7 @@ Object* mObject;
 void sceneInit()
 {
     mShader = new Shader("opengl/shaders/vsh_simple.glsl", "opengl/shaders/fsh_one_color.glsl");
-    mObject = new Object("models/cube.obj");
+    mObject = new Object("models/utah.obj");
 
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
@@ -66,7 +48,7 @@ void sceneInit()
 
 void sceneRender()
 {
-    glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 
     mShader->use();
@@ -94,39 +76,12 @@ void sceneExit()
 
 int main(void)
 {
-    // deviceInit();
-
-    // Init GLFW
-    // glfwInitHint(GLFW_JOYSTICK_HAT_BUTTONS, GLFW_FALSE);
-    glfwSetErrorCallback(errorCallback);
-
-    if (!glfwInit())
-        exit(EXIT_FAILURE);
-
-
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
-
-    GLFWwindow* window = glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "hello_world", NULL, NULL);
-    if (!window)
-    {
-        glfwTerminate();
-        exit(EXIT_FAILURE);
-    }
-
-    inputInit(window);
-
-    glfwMakeContextCurrent(window);
-    glfwSetFramebufferSizeCallback(window, frameBufferSizeCallback);
-    gladLoadGL();
-    glfwSwapInterval(1);
-
-    // Start rendering
+    windowInit(SCREEN_WIDTH, SCREEN_HEIGHT);
     sceneInit();
 
     while (!glfwWindowShouldClose(window))
     {
-        inputParse(window);
+        inputParse();
 
         sceneRender();
 
@@ -134,13 +89,8 @@ int main(void)
         glfwPollEvents();
     }
 
-    // Terminate graphics
-    // sceneExit();
-    glfwDestroyWindow(window);
-    glfwTerminate();
-
-    // Terminate device
-    // deviceStop();
+    sceneExit();
+    windowExit();
 
     exit(EXIT_SUCCESS);
 }
