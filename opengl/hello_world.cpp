@@ -11,13 +11,10 @@
 
 #include "shader.h"
 #include "object.h"
+#include "input.h"
 
 #define SCREEN_WIDTH 1280
 #define SCREEN_HEIGHT 720
-
-GLdouble cx = 0.0f;
-GLdouble cy = 0.0f;
-GLdouble zoom = 1.0f;
 
 GLfloat ratio = GLfloat(SCREEN_HEIGHT)/GLfloat(SCREEN_WIDTH);
 
@@ -37,48 +34,6 @@ static void frameBufferSizeCallback(GLFWwindow* window, int width, int height)
 	glViewport(0, 0, width, height);
 }
 
-double oldTime = 0;
-
-static void handleGamepad(GLFWwindow* window, const GLFWgamepadstate& gamepad)
-{
-	double curTime = glfwGetTime();
-	GLfloat deltaTime = curTime - oldTime;
-    oldTime = curTime;
-
-    GLfloat k = deltaTime/0.1;
-
-	const bool left_pressed = gamepad.buttons[GLFW_GAMEPAD_BUTTON_DPAD_LEFT] == GLFW_PRESS;
-	const bool right_pressed = gamepad.buttons[GLFW_GAMEPAD_BUTTON_DPAD_RIGHT] == GLFW_PRESS;
-	const bool up_pressed = gamepad.buttons[GLFW_GAMEPAD_BUTTON_DPAD_UP] == GLFW_PRESS;
-	const bool down_pressed = gamepad.buttons[GLFW_GAMEPAD_BUTTON_DPAD_DOWN] == GLFW_PRESS;
-
-	const bool zoomin_pressed = gamepad.buttons[GLFW_GAMEPAD_BUTTON_RIGHT_BUMPER] == GLFW_PRESS;
-	const bool zoomout_pressed = gamepad.buttons[GLFW_GAMEPAD_BUTTON_LEFT_BUMPER] == GLFW_PRESS;
-
-	const bool exit_pressed  = gamepad.buttons[GLFW_GAMEPAD_BUTTON_START] == GLFW_PRESS;
-
-    if (exit_pressed)
-        glfwSetWindowShouldClose(window, GLFW_TRUE);
-
-    if (up_pressed && cy < 1.0)
-        cy += 0.1*zoom*k;
-
-    if (down_pressed && cy > -1.0)
-        cy -= 0.1*zoom*k;
-
-    if (right_pressed && cx < 1.0)
-        cx += 0.1*zoom*k;
-
-    if (left_pressed && cx > -2.0)
-        cx -= 0.1*zoom*k;
-
-    if (zoomout_pressed && zoom < 1.0f)
-        zoom *= (1.0f + k*0.5f);
-
-    if (zoomin_pressed)
-        zoom /= (1.0f + k*0.5f);
-}
-
 static GLuint VAO, VBO, EBO;
 
 Shader* mShader;
@@ -86,8 +41,8 @@ Object* mObject;
 
 void sceneInit()
 {
-    mShader = new Shader("shaders/vsh_simple.glsl", "shaders/fsh_one_color.glsl");
-    mObject = new Object("../models/utah.obj");
+    mShader = new Shader("opengl/shaders/vsh_simple.glsl", "opengl/shaders/fsh_one_color.glsl");
+    mObject = new Object("models/cube.obj");
 
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
@@ -109,12 +64,6 @@ void sceneInit()
     glEnableVertexAttribArray(0);
 }
 
-// camera
-// FIXME: Create a camera object
-glm::vec3 cameraPos   = glm::vec3(0.0f, 0.0f, 3.0f);
-glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
-glm::vec3 cameraUp    = glm::vec3(0.0f, 1.0f, 0.0f);
-
 void sceneRender()
 {
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
@@ -132,6 +81,7 @@ void sceneRender()
 
     glBindVertexArray(VAO);
     glDrawElements(GL_TRIANGLES, mObject->indicesCnt, GL_UNSIGNED_INT, 0);
+
     glBindVertexArray(0);
 }
 
@@ -147,11 +97,12 @@ int main(void)
     // deviceInit();
 
     // Init GLFW
-    glfwInitHint(GLFW_JOYSTICK_HAT_BUTTONS, GLFW_FALSE);
+    // glfwInitHint(GLFW_JOYSTICK_HAT_BUTTONS, GLFW_FALSE);
     glfwSetErrorCallback(errorCallback);
 
     if (!glfwInit())
         exit(EXIT_FAILURE);
+
 
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
@@ -163,6 +114,8 @@ int main(void)
         exit(EXIT_FAILURE);
     }
 
+    inputInit(window);
+
     glfwMakeContextCurrent(window);
     glfwSetFramebufferSizeCallback(window, frameBufferSizeCallback);
     gladLoadGL();
@@ -171,25 +124,9 @@ int main(void)
     // Start rendering
     sceneInit();
 
-	GLFWgamepadstate gamepad = {};
-
     while (!glfwWindowShouldClose(window))
     {
-        // Read gamepad
-		if (!glfwGetGamepadState(GLFW_JOYSTICK_1, &gamepad))
-		{
-			// Gamepad not available, so let's fake it with keyboard
-			gamepad.buttons[GLFW_GAMEPAD_BUTTON_DPAD_LEFT]  = glfwGetKey(window, GLFW_KEY_A);
-			gamepad.buttons[GLFW_GAMEPAD_BUTTON_DPAD_RIGHT] = glfwGetKey(window, GLFW_KEY_D);
-			gamepad.buttons[GLFW_GAMEPAD_BUTTON_DPAD_UP]    = glfwGetKey(window, GLFW_KEY_W);
-			gamepad.buttons[GLFW_GAMEPAD_BUTTON_DPAD_DOWN]  = glfwGetKey(window, GLFW_KEY_S);
-
-			gamepad.buttons[GLFW_GAMEPAD_BUTTON_RIGHT_BUMPER] = glfwGetKey(window, GLFW_KEY_E);
-			gamepad.buttons[GLFW_GAMEPAD_BUTTON_LEFT_BUMPER]  = glfwGetKey(window, GLFW_KEY_Q);
-
-			gamepad.buttons[GLFW_GAMEPAD_BUTTON_START] = glfwGetKey(window, GLFW_KEY_ESCAPE);
-		}
-        handleGamepad(window, gamepad);
+        inputParse(window);
 
         sceneRender();
 
