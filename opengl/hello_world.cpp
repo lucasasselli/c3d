@@ -35,12 +35,13 @@ void sceneRender()
     mShader->use();
 
     // pass projection matrix to shader (note that in this case it could change every frame)
-    glm::mat4 projection = glm::perspective(glm::radians(90.0f), (float) SCREEN_WIDTH / (float) SCREEN_HEIGHT, 0.1f, 100.0f);
-    mShader->setMat4("projection", projection);
+    mShader->setMat4("projection", glm::perspective(glm::radians(90.0f), (float) SCREEN_WIDTH / (float) SCREEN_HEIGHT, 0.1f, 100.0f));
 
     // camera/view transformation
-    glm::mat4 view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
-    mShader->setMat4("view", view);
+    mShader->setMat4("view", glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp));
+
+    // set color to red
+    mShader->setVec3("color", glm::vec3(1.0, 0.0, 0.0));
 
     mObject->draw();
 }

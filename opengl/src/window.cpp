@@ -24,9 +24,6 @@ static void windowMouseCallback(GLFWwindow* window, double xpos, double ypos)
 
     pitch = glm::clamp(pitch, -89.0f, +89.0f);
 
-    // printf("xpos = %0lf ypos = %0lf\n", xpos, ypos);
-    // printf("pitch = %0f yaw = %0f\n", pitch, yaw);
-
     glm::vec3 direction;
     direction.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
     direction.y = sin(glm::radians(pitch));

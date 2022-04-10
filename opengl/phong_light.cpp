@@ -3,6 +3,7 @@
 #include <glad/glad.h>
 
 #define GLFW_INCLUDE_NONE
+#define GLM_SWIZZLE
 #include <GLFW/glfw3.h>
 
 #include <glm/glm.hpp>
@@ -16,7 +17,8 @@
 #define SCREEN_WIDTH 1280
 #define SCREEN_HEIGHT 720
 
-Shader* mShader;
+Shader* simpleShader;
+Shader* phongShader;
 Object* teapotObj;
 Object* cubeObj;
 
@@ -25,10 +27,10 @@ glm::vec3 lightColor(1.0f, 1.0f, 1.0f);
 
 void sceneInit()
 {
-    mShader = new Shader("opengl/shaders/vsh_phong.glsl", "opengl/shaders/fsh_phong.glsl");
+    simpleShader = new Shader("opengl/shaders/vsh_phong.glsl", "opengl/shaders/fsh_simple.glsl");
+    phongShader = new Shader("opengl/shaders/vsh_phong.glsl", "opengl/shaders/fsh_phong.glsl");
 
     teapotObj = new Object("models/utah.obj");
-
     cubeObj = new Object("models/cube.obj");
 }
 
@@ -37,26 +39,39 @@ void sceneRender()
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    mShader->use();
-
-    // pass projection matrix to shader (note that in this case it could change every frame)
     glm::mat4 projection = glm::perspective(glm::radians(90.0f), (float) SCREEN_WIDTH / (float) SCREEN_HEIGHT, 0.1f, 100.0f);
-    mShader->setMat4("projection", projection);
-
-    // camera/view transformation
     glm::mat4 view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
-    mShader->setMat4("view", view);
 
     // Cube
-    mShader->setMat4("model", glm::translate(glm::mat4(1.0f), lightPos));
+    simpleShader->use();
+
+    glm::vec4 light(0.0f, 0.0f, 0.0f, 1.0f);
+
+    glm::mat4 model(1.0);
+    model = glm::rotate(model, (float) glfwGetTime()*0.8f, glm::vec3(0, 1 , 0));
+    model = glm::translate(model, lightPos);
+
+    light = model * light;
+
+    simpleShader->setMat4("projection", projection);
+    simpleShader->setMat4("view", view);
+    simpleShader->setMat4("model", model);
+
+    simpleShader->setVec3("color", glm::vec3(1.0f));
+
     cubeObj->draw();
 
     // Teapot
-    mShader->setVec3("lightPos", lightPos);
-    mShader->setVec3("lightColor", lightColor);
-    mShader->setMat4("model", glm::mat4(1.0f));
-    teapotObj->draw();
+    phongShader->use();
 
+    phongShader->setMat4("projection", projection);
+    phongShader->setMat4("view", view);
+    phongShader->setMat4("model", glm::mat4(1.0f));
+
+    phongShader->setVec3("lightPos", light.xyz());
+    phongShader->setVec3("lightColor", lightColor);
+
+    teapotObj->draw();
 }
 
 int main(void)
