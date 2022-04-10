@@ -34,10 +34,10 @@ void Shader::use()
     glUseProgram(program);
 }
 
-void Shader::setUniform1i(const char* name, GLint a)
+void Shader::setVec3(const char* name, glm::vec3 a)
 {
     GLuint loc = glGetUniformLocation(program, name);
-    glUniform1i(loc, a);
+    glUniform3f(loc, a[0], a[1], a[2]);
 }
 
 void Shader::setMat4(const char* name, glm::mat4 a)
@@ -81,7 +81,7 @@ GLint Shader::load(GLenum type, const char* path)
     {
         GLchar msg[512];
         glGetShaderInfoLog(handle, sizeof(msg), nullptr, msg);
-        printf("%u: %s\n", type, msg);
+        printf("%s: %s\n", path, msg);
         glDeleteShader(handle);
         return 0;
     }

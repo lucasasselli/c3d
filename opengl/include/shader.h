@@ -15,7 +15,7 @@ public:
     Shader(const char*, const char*);
     ~Shader();
 
-    void setUniform1i(const char*, GLint);
+    void setVec3(const char*, glm::vec3);
     void setMat4(const char*, glm::mat4);
 
     void use();

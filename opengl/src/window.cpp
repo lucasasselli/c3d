@@ -24,8 +24,8 @@ static void windowMouseCallback(GLFWwindow* window, double xpos, double ypos)
 
     pitch = glm::clamp(pitch, -89.0f, +89.0f);
 
-    printf("xpos = %0lf ypos = %0lf\n", xpos, ypos);
-    printf("pitch = %0f yaw = %0f\n", pitch, yaw);
+    // printf("xpos = %0lf ypos = %0lf\n", xpos, ypos);
+    // printf("pitch = %0f yaw = %0f\n", pitch, yaw);
 
     glm::vec3 direction;
     direction.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
@@ -58,9 +58,9 @@ void windowInit(int width, int height)
 
     // glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
-
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
     window = glfwCreateWindow(width, height, "OpenGL", NULL, NULL);
     if (!window)

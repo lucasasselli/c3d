@@ -9,8 +9,11 @@ find_package(glfw3 3.3 REQUIRED)
 add_subdirectory(libs/glad)
 
 file(GLOB SOURCE_FILES src/*.cpp)
+file(GLOB TARGET_FILES *.cpp)
 
-add_executable(hello_world hello_world.cpp ${SOURCE_FILES})
-
-target_include_directories(hello_world PRIVATE include)
-target_link_libraries(hello_world PRIVATE glad glfw ${CMAKE_DL_LIBS})
+foreach(TARGET_FILE ${TARGET_FILES})
+    get_filename_component(TARGET ${TARGET_FILE} NAME_WE)
+    add_executable(${TARGET} ${TARGET_FILE} ${SOURCE_FILES})
+    target_include_directories(${TARGET} PRIVATE include)
+    target_link_libraries(${TARGET} PRIVATE glad glfw ${CMAKE_DL_LIBS})
+endforeach()
