@@ -70,6 +70,7 @@ void sceneRender()
 
     phongShader->setVec3("lightPos", light.xyz());
     phongShader->setVec3("lightColor", lightColor);
+    phongShader->setVec3("cameraPos", cameraPos);
 
     teapotObj->draw();
 }
