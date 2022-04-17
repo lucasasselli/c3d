@@ -27,8 +27,8 @@ glm::vec3 lightColor(1.0f, 1.0f, 1.0f);
 
 void sceneInit()
 {
-    simpleShader = new Shader("opengl/shaders/vsh_phong.glsl", "opengl/shaders/fsh_simple.glsl");
-    phongShader = new Shader("opengl/shaders/vsh_phong.glsl", "opengl/shaders/fsh_phong.glsl");
+    simpleShader = new Shader("shaders/vsh_phong.glsl", "shaders/fsh_simple.glsl");
+    phongShader = new Shader("shaders/vsh_phong.glsl", "shaders/fsh_phong.glsl");
 
     teapotObj = new Object("models/utah.obj");
     cubeObj = new Object("models/cube.obj");

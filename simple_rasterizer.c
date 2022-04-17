@@ -116,15 +116,6 @@ static inline float edge_funct(vertex_t a, vertex_t b, vertex_t c)
     return (c.coord.x - a.coord.x) * (b.coord.y - a.coord.y) - (c.coord.y - a.coord.y) * (b.coord.x - a.coord.x);
 }
 
-void dump_vertices()
-{
-    for (int i = 0; i < v_buff_cnt; i++)
-    {
-        printf("%f %f %f %f\n", v_buff[i].coord.x, v_buff[i].coord.y, v_buff[i].coord.z, v_buff[i].coord.w);
-    }
-    printf("----------------------------------------------------------------\n");
-}
-
 void raster()
 {
     vertex_t v0, v1, v2;
@@ -216,9 +207,9 @@ int main()
     float r = 0;
 
     // Open a new window for drawing.
-    gfx_open(SCREEN_SIZE_X, SCREEN_SIZE_Y, "graphics_pipeline");
+    gfx_open(SCREEN_SIZE_X, SCREEN_SIZE_Y, "simple rasterizer");
 
-    load_obj_file("objects/utah.obj");
+    load_obj_file("models/utah.obj");
 
     while (1)
     {
@@ -231,7 +222,6 @@ int main()
         }
 
         convert_to_ndc(M_PI / 3, 1.0, 1, 20);
-        // TODO: Clipping
         convert_to_raster();
 
         raster();

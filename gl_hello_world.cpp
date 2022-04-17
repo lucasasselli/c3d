@@ -22,7 +22,7 @@ Object* mObject;
 
 void sceneInit()
 {
-    mShader = new Shader("opengl/shaders/vsh_simple.glsl", "opengl/shaders/fsh_simple.glsl");
+    mShader = new Shader("shaders/vsh_simple.glsl", "shaders/fsh_simple.glsl");
 
     mObject = new Object("models/utah.obj");
 }
