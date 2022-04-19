@@ -34,6 +34,12 @@ void Shader::use()
     glUseProgram(program);
 }
 
+void Shader::setInt(const char* name, GLuint a)
+{
+    GLuint loc = glGetUniformLocation(program, name);
+    glUniform1i(loc, a);
+}
+
 void Shader::setVec3(const char* name, glm::vec3 a)
 {
     GLuint loc = glGetUniformLocation(program, name);
